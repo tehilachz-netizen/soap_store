@@ -20,6 +20,7 @@ collections:
             label: "רשימת סבונים"
             widget: "list"
             fields:
+              - { label: "הסתר מוצר מהאתר (וי חיצוני)", name: "hidden", widget: "boolean", default: false, required: false }
               - { label: "מזהה ייחודי (באנגלית)", name: "id", widget: "string" }
               - { label: "שם הסבון", name: "title", widget: "string" }
               - { label: "תיאור קצר (סלוגן)", name: "tagline", widget: "string" }
@@ -31,7 +32,6 @@ collections:
               - { label: "רכיבים", name: "ingredients", widget: "text" }
               - { label: "סגולות ותכונות", name: "benefits", widget: "list", field: { label: "תכונה / סגולה", name: "benefit", widget: "text" }, required: false }
               - { label: "קישור להזמנה בווטסאפ", name: "whatsapp_link", widget: "string", required: false }
-              - { label: "הסתר מוצר מהאתר", name: "hidden", widget: "boolean", default: false, required: false }
               - { label: "הצג באנר 'יחידות אחרונות'", name: "last_units", widget: "boolean", default: false, required: false }
               - { label: "הצג באנר 'אזל מהמלאי'", name: "out_of_stock", widget: "boolean", default: false, required: false }
 
