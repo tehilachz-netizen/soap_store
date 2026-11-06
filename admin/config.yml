@@ -19,7 +19,7 @@ collections:
           - name: "soaps"
             label: "רשימת סבונים"
             widget: "list"
-            summary: "{{fields.title}} {{#fields.hidden}}🔴 (מוסתר מהאתר){{/fields.hidden}}{{^fields.hidden}}🟢 (מוצג באתר){{/fields.hidden}}"
+            summary: "{{fields.title}} {{#fields.hidden}}🔴 [מוסתר מהאתר]{{/fields.hidden}}{{^fields.hidden}}🟢 [גלוי באתר]{{/fields.hidden}}"
             fields:
               - { label: "הסתר מוצר מהאתר", name: "hidden", widget: "boolean", default: false, required: false }
               - { label: "שם הסבון", name: "title", widget: "string" }
