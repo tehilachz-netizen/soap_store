@@ -164,7 +164,7 @@
       <a href="/" class="back-link">→ חזרה לקטלוג הסבונים</a>
 
       <div class="product-wrapper" id="product-content">
-        <p>טוען נתוני סבון...</p>
+        <p style="padding: 30px; text-align: center;">טוען נתוני סבון...</p>
       </div>
     </div>
   </main>
@@ -189,18 +189,26 @@
     const soapId = urlParams.get('id');
 
     fetch('/soaps.json')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
       .then(data => {
         const soaps = Array.isArray(data) ? data : (data.soaps || []);
         
-        const soap = soaps.find((item, idx) => item.id === soapId || `soap-${idx + 1}` === soapId) || soaps[0];
+        // חיפוש מדויק לפי מזהה ה-id או לפי מיקום ברשימה
+        const soap = soaps.find((item, idx) => {
+          const currentId = item.id ? String(item.id).trim() : '';
+          const targetId = soapId ? String(soapId).trim() : '';
+          return currentId === targetId || `soap-${idx + 1}` === targetId;
+        }) || soaps[0];
 
-        if (!soap || soap.hidden) {
-          document.getElementById('product-content').innerHTML = '<p style="padding: 40px; text-align: center;">הסבון אינו זמין כרגע.</p>';
+        if (!soap) {
+          document.getElementById('product-content').innerHTML = '<p style="padding: 40px; text-align: center;">סבון לא נמצא.</p>';
           return;
         }
 
-        const title = soap.title || soap.name;
+        const title = soap.title || soap.name || 'סבון טבעי';
         const tagline = soap.tagline || soap.subtitle || '';
         const image = formatImagePath(soap.image);
         const benefits = soap.benefits || soap.features || [];
@@ -217,6 +225,64 @@
           `;
         }
 
-        // טיפול בבאנרים בדף המוצר
         let badgeHtml = '';
         if (soap.out_of_stock) {
+          badgeHtml = `<div class="badge-out-page">אזל מהמלאי</div>`;
+        } else if (soap.last_units) {
+          badgeHtml = `<div class="badge-last-page">יחידות אחרונות!</div>`;
+        }
+
+        const phoneNumber = "972584020823";
+        const message = `היי, אשמח להזמין את הסבון: *${title}* 🌿`;
+        const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+
+        let whatsappButtonHtml = `<a href="${whatsappUrl}" target="_blank" class="whatsapp-btn">להזמנה בוואטסאפ 💬</a>`;
+        if (soap.out_of_stock) {
+          whatsappButtonHtml = `<a href="#" class="whatsapp-btn disabled">המוצר אזל מהמלאי</a>`;
+        }
+
+        let priceHtml = '';
+        if (soap.show_sale && soap.sale_price) {
+          priceHtml = `
+            <div class="price">
+              <span style="color: var(--primary-hover);">₪${soap.sale_price}</span>
+              ${soap.price ? `<span style="text-decoration: line-through; font-size: 1.1rem; color: #8c7161; margin-right: 8px;">₪${soap.price}</span>` : ''}
+            </div>
+          `;
+        } else if (soap.price) {
+          priceHtml = `<div class="price">₪${soap.price}</div>`;
+        }
+
+        document.getElementById('product-content').innerHTML = `
+          <div class="product-media">
+            ${badgeHtml}
+            <img src="${image}" alt="${title}" onerror="this.src='/images/default.jpg'">
+          </div>
+          <div class="product-details">
+            <h1>${title}</h1>
+            <div class="subtitle">${tagline}</div>
+            ${priceHtml}
+
+            ${soap.suitable_for ? `
+              <div class="section-title">למי זה מתאים?</div>
+              <p>${soap.suitable_for}</p>
+            ` : ''}
+
+            ${soap.ingredients ? `
+              <div class="section-title">רכיבים:</div>
+              <p>${soap.ingredients}</p>
+            ` : ''}
+
+            ${benefitsHtml}
+
+            ${whatsappButtonHtml}
+          </div>
+        `;
+      })
+      .catch(err => {
+        console.error('Error loading product:', err);
+        document.getElementById('product-content').innerHTML = '<p style="padding: 40px; text-align: center;">שגיאה בטעינת פרטי הסבון.</p>';
+      });
+  </script>
+</body>
+</html>
