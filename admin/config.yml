@@ -19,17 +19,18 @@ collections:
           - name: "soaps"
             label: "רשימת סבונים"
             widget: "list"
+            summary: "{{fields.title}} {{#fields.hidden}}🔴 (מוסתר מהאתר){{/fields.hidden}}{{^fields.hidden}}🟢 (מוצג באתר){{/fields.hidden}}"
             fields:
-              - { label: "הסתר מוצר מהאתר (וי חיצוני)", name: "hidden", widget: "boolean", default: false, required: false }
-              - { label: "מזהה ייחודי (באנגלית)", name: "id", widget: "string" }
+              - { label: "הסתר מוצר מהאתר", name: "hidden", widget: "boolean", default: false, required: false }
               - { label: "שם הסבון", name: "title", widget: "string" }
-              - { label: "תיאור קצר (סלוגן)", name: "tagline", widget: "string" }
-              - { label: "תמונה", name: "image", widget: "image" }
+              - { label: "מזהה ייחודי (באנגלית)", name: "id", widget: "string" }
+              - { label: "תיאור קצר (סלוגן)", name: "tagline", widget: "string", required: false }
+              - { label: "תמונה", name: "image", widget: "image", required: false }
               - { label: "מחיר רגיל (לדוגמה: 20)", name: "price", widget: "string", required: false }
               - { label: "להציג מחיר מבצע/השקה מיוחד למוצר זה?", name: "show_sale", widget: "boolean", default: false, required: false }
               - { label: "מחיר מיוחד / מבצע (לדוגמה: 18)", name: "sale_price", widget: "string", required: false }
               - { label: "למי מתאים?", name: "suitable_for", widget: "text", required: false }
-              - { label: "רכיבים", name: "ingredients", widget: "text" }
+              - { label: "רכיבים", name: "ingredients", widget: "text", required: false }
               - { label: "סגולות ותכונות", name: "benefits", widget: "list", field: { label: "תכונה / סגולה", name: "benefit", widget: "text" }, required: false }
               - { label: "קישור להזמנה בווטסאפ", name: "whatsapp_link", widget: "string", required: false }
               - { label: "הצג באנר 'יחידות אחרונות'", name: "last_units", widget: "boolean", default: false, required: false }
