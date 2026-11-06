@@ -127,10 +127,40 @@
       color: inherit;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
     .product-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    /* עיצוב התגיות/באנרים על גבי כרטיס המוצר */
+    .badge-out {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background-color: #d9534f;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      z-index: 2;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .badge-last {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background-color: #f0ad4e;
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      z-index: 2;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
     .product-image {
@@ -246,30 +276,24 @@
         
         const promoContainer = document.getElementById('site-promo');
 
-        // בודק אם הבאנר מופעל במערכת הניהול
         if (settings && settings.show_launch_banner !== false) {
           const parts = [];
 
-          // בדיקה אם יש מחיר השקה/מבצע
           const hasSale = !!(settings.unit_sale_price || settings.pair_sale_price);
           const prefix = hasSale ? 'מחיר השקה:' : 'מחיר:';
 
-          // טיפול במחיר ליחידה (בין אם רגיל ובין אם מבצע)
           const unitPrice = settings.unit_sale_price || settings.unit_original_price;
           if (unitPrice) {
             let unitHtml = `<span class="sale-highlight">ליחידה ${unitPrice}</span>`;
-            // אם יש גם מחיר מבצע וגם מחיר רגיל, נוסיף קו מחוק על המחיר הרגיל
             if (settings.unit_sale_price && settings.unit_original_price) {
               unitHtml += ` <span class="strikethrough-price">${settings.unit_original_price}</span>`;
             }
             parts.push(`<span class="price-group">${unitHtml}</span>`);
           }
 
-          // טיפול במחיר לזוג (בין אם רגיל ובין אם מבצע)
           const pairPrice = settings.pair_sale_price || settings.pair_original_price;
           if (pairPrice) {
             let pairHtml = `<span class="sale-highlight">זוג ${pairPrice}</span>`;
-            // אם יש גם מחיר מבצע וגם מחיר רגיל לזוג, נוסיף קו מחוק
             if (settings.pair_sale_price && settings.pair_original_price) {
               pairHtml += ` <span class="strikethrough-price">${settings.pair_original_price}</span>`;
             }
@@ -310,7 +334,10 @@
         const container = document.getElementById('catalog-container');
         container.innerHTML = '';
 
-        const soaps = Array.isArray(data) ? data : (data.soaps || []);
+        const rawSoaps = Array.isArray(data) ? data : (data.soaps || []);
+
+        // סינון מוצרים כך שמוצרים שסומנו כמוסתרים (hidden) לא יופיעו בכלל באתר
+        const soaps = rawSoaps.filter(soap => !soap.hidden);
 
         if (soaps.length === 0) {
           container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">אין מוצרים להצגה כרגע.</p>';
@@ -322,6 +349,14 @@
           const soapTitle = soap.title || soap.name || 'סבון טבעי';
           const soapTagline = soap.tagline || soap.subtitle || '';
           const soapImage = formatImagePath(soap.image);
+
+          // טיפול בבאנרים/תגיות לפי סימון וי במערכת הניהול
+          let badgeHtml = '';
+          if (soap.out_of_stock) {
+            badgeHtml = `<div class="badge-out">אזל מהמלאי</div>`;
+          } else if (soap.last_units) {
+            badgeHtml = `<div class="badge-last">יחידות אחרונות!</div>`;
+          }
 
           let priceHtml = '';
           if (soap.show_sale && soap.sale_price) {
@@ -340,6 +375,7 @@
           card.href = `/product.html?id=${encodeURIComponent(soapId)}`;
 
           card.innerHTML = `
+            ${badgeHtml}
             <img class="product-image" src="${soapImage}" alt="${soapTitle}" onerror="this.src='/images/default.jpg'">
             <div class="product-info">
               <h2 class="product-title">${soapTitle}</h2>
