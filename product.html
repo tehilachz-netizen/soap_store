@@ -183,6 +183,11 @@
           `;
         }
 
+        // יצירת קישור וואטסאפ דינמי הכולל את שם הסבון הספציפי
+        const phoneNumber = "972584020823";
+        const message = `היי, אשמח להזמין את הסבון: *${title}* 🌿`;
+        const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+
         document.getElementById('product-content').innerHTML = `
           <div class="product-media">
             <img src="${image}" alt="${title}" onerror="this.src='/images/default.jpg'">
@@ -204,9 +209,7 @@
 
             ${benefitsHtml}
 
-            ${soap.whatsapp_link ? `
-              <a href="${soap.whatsapp_link}" target="_blank" class="whatsapp-btn">להזמנה בווטסאפ</a>
-            ` : ''}
+            <a href="${whatsappUrl}" target="_blank" class="whatsapp-btn">להזמנה בוואטסאפ 💬</a>
           </div>
         `;
       })
